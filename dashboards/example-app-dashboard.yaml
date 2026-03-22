@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-app-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  example-app.json: |
+    {
+      "title": "example-app namespace",
+      "uid": "example-app",
+      "timezone": "browser",
+      "panels": [
+        {
+          "title": "CPU Usage",
+          "type": "timeseries",
+          "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+          "targets": [{
+            "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"example-app\"}[5m])) by (pod)",
+            "legendFormat": "{{pod}}"
+          }]
+        },
+        {
+          "title": "Memory Usage",
+          "type": "timeseries",
+          "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+          "targets": [{
+            "expr": "sum(container_memory_working_set_bytes{namespace=\"example-app\"}) by (pod)",
+            "legendFormat": "{{pod}}"
+          }]
+        },
+        {
+          "title": "Pod Restarts",
+          "type": "timeseries",
+          "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+          "targets": [{
+            "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"example-app\"}) by (pod)",
+            "legendFormat": "{{pod}}"
+          }]
+        },
+        {
+          "title": "Pod Status",
+          "type": "stat",
+          "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+          "targets": [{
+            "expr": "sum(kube_pod_status_phase{namespace=\"example-app\"}) by (phase)",
+            "legendFormat": "{{phase}}"
+          }]
+        }
+      ],
+      "schemaVersion": 36,
+      "version": 1
+    }
