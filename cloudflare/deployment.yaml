@@ -21,3 +21,11 @@ spec:
         - --no-autoupdate
         - --url
         - http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 50m
+          limits:
+            memory: 128Mi
+            cpu: 100m
+        restartPolicy: Always
