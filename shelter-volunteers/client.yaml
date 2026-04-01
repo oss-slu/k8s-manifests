@@ -23,7 +23,7 @@ spec:
         - containerPort: 3000
         env:
         - name: REACT_APP_SERVER_URL
-          value: http://10.60.63.1:30080/shelter-api
+          value: https://gene-cylinder-disabled-knit.trycloudflare.com/shelter-api
         - name: PUBLIC_URL
           value: /shelter
         - name: DANGEROUSLY_DISABLE_HOST_CHECK
