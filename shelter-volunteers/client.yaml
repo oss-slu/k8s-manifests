@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shelter-client
+  namespace: shelter-volunteers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shelter-client
+  template:
+    metadata:
+      labels:
+        app: shelter-client
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: client
+        image: ghcr.io/oss-slu/shelter_volunteers/client:dev
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        env:
+        - name: REACT_APP_SERVER_URL
+          value: http://10.60.63.1:30080/shelter-api
+        - name: PUBLIC_URL
+          value: /shelter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shelter-client
+  namespace: shelter-volunteers
+spec:
+  selector:
+    app: shelter-client
+  ports:
+  - port: 3000
+    targetPort: 3000

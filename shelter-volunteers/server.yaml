@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shelter-server
+  namespace: shelter-volunteers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shelter-server
+  template:
+    metadata:
+      labels:
+        app: shelter-server
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: server
+        image: ghcr.io/oss-slu/shelter_volunteers/server:dev
+        imagePullPolicy: IfNotPresent
+        command: ["flask", "run", "--debug", "-h", "0.0.0.0", "-p", "5001"]
+        ports:
+        - containerPort: 5001
+        env:
+        - name: FLASK_ENV
+          value: development
+        - name: FLASK_CONFIG
+          value: development
+        - name: MONGODB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: shelter-volunteers-env
+              key: MONGODB_HOST
+        - name: MONGODB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: shelter-volunteers-env
+              key: MONGODB_PORT
+        - name: MONGODB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: shelter-volunteers-env
+              key: MONGODB_USERNAME
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: shelter-volunteers-env
+              key: MONGODB_PASSWORD
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: shelter-volunteers-env
+              key: JWT_SECRET
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shelter-server
+  namespace: shelter-volunteers
+spec:
+  selector:
+    app: shelter-server
+  ports:
+  - port: 5001
+    targetPort: 5001
