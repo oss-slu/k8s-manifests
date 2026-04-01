@@ -26,6 +26,8 @@ spec:
           value: http://10.60.63.1:30080/shelter-api
         - name: PUBLIC_URL
           value: /shelter
+        - name: DANGEROUSLY_DISABLE_HOST_CHECK
+          value: "true"
 ---
 apiVersion: v1
 kind: Service
