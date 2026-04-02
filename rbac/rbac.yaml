@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: viewer
+  namespace: team
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: namespace-viewer
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log", "services", "endpoints", "configmaps"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: viewer-binding
+  namespace: shelter-volunteers
+subjects:
+- kind: ServiceAccount
+  name: viewer
+  namespace: team
+roleRef:
+  kind: ClusterRole
+  name: namespace-viewer
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: viewer-binding
+  namespace: example-app
+subjects:
+- kind: ServiceAccount
+  name: viewer
+  namespace: team
+roleRef:
+  kind: ClusterRole
+  name: namespace-viewer
+  apiGroup: rbac.authorization.k8s.io
