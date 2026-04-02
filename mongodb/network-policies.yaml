@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-server-to-mongodb
+  namespace: mongodb
+spec:
+  podSelector:
+    matchLabels:
+      app: mongodb-svc
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: shelter-volunteers
+      podSelector:
+        matchLabels:
+          app: shelter-server
+  policyTypes:
+  - Ingress
