@@ -1,19 +1,23 @@
+# NetworkPolicy: Controls pod-level network traffic within the cluster
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-server-to-mongodb
-  namespace: mongodb
+  name: allow-server-to-mongodb   # Policy name: explicitly allows shelter-server → mongodb traffic
+  namespace: mongodb               # Applies to the mongodb namespace
 spec:
   podSelector:
     matchLabels:
-      app: mongodb-svc
+      app: mongodb-svc             # Targets pods labeled app=mongodb-svc (the MongoDB pods)
+
   ingress:
   - from:
+    # Both conditions below are AND-ed together — the request must satisfy both:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: shelter-volunteers
+          kubernetes.io/metadata.name: shelter-volunteers  # 1) Traffic must come from the shelter-volunteers namespace
       podSelector:
         matchLabels:
-          app: shelter-server
+          app: shelter-server      # 2) AND from pods labeled app=shelter-server within that namespace
+
   policyTypes:
-  - Ingress
+  - Ingress                        # Only ingress (inbound) traffic is governed; egress is unrestricted
