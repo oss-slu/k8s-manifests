@@ -4,6 +4,7 @@ metadata:
   name: shelter-volunteers
   namespace: shelter-volunteers
 spec:
+  # Route the /shelter path to the client service.
   ingressClassName: nginx
   rules:
   - http:
@@ -22,8 +23,10 @@ metadata:
   name: shelter-api
   namespace: shelter-volunteers
   annotations:
+    # Strip the /shelter-api prefix before forwarding to the server.
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
+  # Route API requests through the same nginx ingress controller.
   ingressClassName: nginx
   rules:
   - http:
