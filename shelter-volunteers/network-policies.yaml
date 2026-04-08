@@ -4,6 +4,7 @@ metadata:
   name: default-deny-ingress
   namespace: shelter-volunteers
 spec:
+  # Block all inbound traffic unless a later policy allows it.
   podSelector: {}
   policyTypes:
   - Ingress
@@ -14,6 +15,7 @@ metadata:
   name: allow-ingress-to-client
   namespace: shelter-volunteers
 spec:
+  # Allow the nginx ingress controller to reach the client pods.
   podSelector:
     matchLabels:
       app: shelter-client
@@ -31,6 +33,7 @@ metadata:
   name: allow-ingress-to-server
   namespace: shelter-volunteers
 spec:
+  # Allow the nginx ingress controller to reach the server pods.
   podSelector:
     matchLabels:
       app: shelter-server

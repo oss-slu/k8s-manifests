@@ -4,6 +4,7 @@ metadata:
   name: shelter-client
   namespace: shelter-volunteers
 spec:
+  # Run a single client replica for the shelter volunteers app.
   replicas: 1
   selector:
     matchLabels:
@@ -13,6 +14,7 @@ spec:
       labels:
         app: shelter-client
     spec:
+      # Pull the private image from GitHub Container Registry.
       imagePullSecrets:
       - name: ghcr-secret
       containers:
@@ -22,10 +24,13 @@ spec:
         ports:
         - containerPort: 3000
         env:
+        # Backend API endpoint used by the React client.
         - name: REACT_APP_SERVER_URL
           value: https://gene-cylinder-disabled-knit.trycloudflare.com/shelter-api
+        # Serve the app from the /shelter path prefix.
         - name: PUBLIC_URL
           value: /shelter
+        # Required for local-style development hosting behind Kubernetes.
         - name: DANGEROUSLY_DISABLE_HOST_CHECK
           value: "true"
 ---
@@ -35,6 +40,7 @@ metadata:
   name: shelter-client
   namespace: shelter-volunteers
 spec:
+  # Expose the client pod inside the cluster on port 3000.
   selector:
     app: shelter-client
   ports:
