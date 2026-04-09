@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mdma-client
+  namespace: mdma
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mdma-client
+  template:
+    metadata:
+      labels:
+        app: mdma-client
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: client
+        image: ghcr.io/oss-slu/material-derailleur/client:dev
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: FRONTEND_PORT
+          value: "3000"
+        - name: REACT_APP_BACKEND_API_BASE_URL
+          value: "/mdma-api/"
+        - name: PUBLIC_URL
+          value: /mdma
+        - name: DANGEROUSLY_DISABLE_HOST_CHECK
+          value: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mdma-client
+  namespace: mdma
+spec:
+  selector:
+    app: mdma-client
+  ports:
+  - port: 3000
+    targetPort: 3000

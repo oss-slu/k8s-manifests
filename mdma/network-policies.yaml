@@ -1,0 +1,94 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: mdma
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-client
+  namespace: mdma
+spec:
+  podSelector:
+    matchLabels:
+      app: mdma-client
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 3000
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-server
+  namespace: mdma
+spec:
+  podSelector:
+    matchLabels:
+      app: mdma-server
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 5000
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-server-to-database
+  namespace: mdma
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/cluster: mdma-database
+  policyTypes:
+  - Ingress
+  ingress:
+  # App server → database for SQL traffic
+  - from:
+    - podSelector:
+        matchLabels:
+          app: mdma-server
+    ports:
+    - protocol: TCP
+      port: 5432
+  # CNPG operator → database instance manager (status, lifecycle, metrics) + SQL
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: cnpg-system
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: cloudnative-pg
+    ports:
+    - protocol: TCP
+      port: 8000
+    - protocol: TCP
+      port: 5432
+  # CNPG cluster pods talk to each other on 8000 + 5432 (replication, status).
+  # Single-instance now, future-proofs for HA.
+  - from:
+    - podSelector:
+        matchLabels:
+          cnpg.io/cluster: mdma-database
+    ports:
+    - protocol: TCP
+      port: 8000
+    - protocol: TCP
+      port: 5432

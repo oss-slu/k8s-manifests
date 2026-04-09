@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mdma-server
+  namespace: mdma
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mdma-server
+  template:
+    metadata:
+      labels:
+        app: mdma-server
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: server
+        image: ghcr.io/oss-slu/material-derailleur/server:dev
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5050
+        env:
+        - name: BACKEND_PORT
+          value: "5050"
+        - name: DATABASE_URL
+          value: "postgresql://admin:slu%40infra@mdma-database-rw.mdma.svc.cluster.local:5432/mdma"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: mdma-env
+              key: JWT_SECRET
+        - name: AZURE_STORAGE_ACCOUNT_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mdma-env
+              key: AZURE_STORAGE_ACCOUNT_NAME
+        - name: AZURE_STORAGE_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mdma-env
+              key: AZURE_STORAGE_ACCESS_KEY
+        - name: SMTP_HOST
+          valueFrom:
+            secretKeyRef:
+              name: mdma-env
+              key: SMTP_HOST
+        - name: SMTP_PORT
+          valueFrom:
+            secretKeyRef:
+              name: mdma-env
+              key: SMTP_PORT
+        - name: SMTP_SECURE
+          valueFrom:
+            secretKeyRef:
+              name: mdma-env
+              key: SMTP_SECURE
+        - name: SMTP_USER
+          valueFrom:
+            secretKeyRef:
+              name: mdma-env
+              key: SMTP_USER
+        - name: SMTP_PASS
+          valueFrom:
+            secretKeyRef:
+              name: mdma-env
+              key: SMTP_PASS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mdma-server
+  namespace: mdma
+spec:
+  selector:
+    app: mdma-server
+  ports:
+  - port: 5050
+    targetPort: 5000
