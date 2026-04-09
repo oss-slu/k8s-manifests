@@ -24,6 +24,9 @@ spec:
         env:
         - name: BACKEND_PORT
           value: "5050"
+
+        - name: CORS_ALLOWED_ORIGINS
+          value: "https://gene-cylinder-disabled-knit.trycloudflare.com,http://localhost:3000"
         - name: DATABASE_URL
           value: "postgresql://admin:slu%40infra@mdma-database-rw.mdma.svc.cluster.local:5432/mdma"
         - name: JWT_SECRET
