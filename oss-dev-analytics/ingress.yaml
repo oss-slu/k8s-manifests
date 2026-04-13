@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oss-dev-analytics
+  namespace: oss-dev-analytics
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /oss-dev-analytics
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80

@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: data-pipeline
+  namespace: oss-dev-analytics
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: pipeline
+            image: ghcr.io/oss-slu/oss_dev_analytics/backend:latest
+            imagePullPolicy: Always
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                set -e
+                python Backend/dataCollection/collectData.py --mode sprint
+                python Backend/calculateHealth.py
+            env:
+            - name: GIT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-token
+                  key: GIT_TOKEN
+            - name: DATA_PATH
+              value: /data/sprint_data.json
+            - name: OUTPUT_PATH
+              value: /data/health.json
+            volumeMounts:
+            - name: analytics-data
+              mountPath: /data
+            resources:
+              requests:
+                memory: 256Mi
+                cpu: 100m
+              limits:
+                memory: 512Mi
+                cpu: 500m
+          volumes:
+          - name: analytics-data
+            persistentVolumeClaim:
+              claimName: analytics-data
