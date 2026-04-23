@@ -3,12 +3,14 @@ kind: Ingress
 metadata:
   name: oss-dev-analytics
   namespace: oss-dev-analytics
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
   - http:
       paths:
-      - path: /oss-dev-analytics
+      - path: /oss_dev_analytics(/|$)(.*)
         pathType: Prefix
         backend:
           service:
