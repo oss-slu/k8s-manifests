@@ -17,7 +17,7 @@ spec:
       - name: ghcr-secret
       containers:
       - name: client
-        image: ghcr.io/oss-slu/material-derailleur/client:sha-23e6f7c
+        image: ghcr.io/oss-slu/material-derailleur/client:sha-cb1b2e3
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
