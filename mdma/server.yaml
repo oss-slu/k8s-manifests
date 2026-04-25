@@ -17,7 +17,7 @@ spec:
       - name: ghcr-secret
       containers:
       - name: server
-        image: ghcr.io/oss-slu/material-derailleur/server:sha-9994225
+        image: ghcr.io/oss-slu/material-derailleur/server:sha-23e6f7c
         imagePullPolicy: Always
         ports:
         - containerPort: 5050
