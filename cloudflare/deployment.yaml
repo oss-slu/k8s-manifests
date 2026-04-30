@@ -19,15 +19,8 @@ spec:
         args:
         - tunnel
         - --no-autoupdate
-        - run
-        - --token
-        - $(TUNNEL_TOKEN)
-        env:
-        - name: TUNNEL_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: cloudflare-tunnel-token
-              key: token
+        - --url
+        - http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
         resources:
           requests:
             memory: 64Mi
