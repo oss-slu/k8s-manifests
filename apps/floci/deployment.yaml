@@ -19,6 +19,10 @@ spec:
           ports:
             - containerPort: 4566
           env:
+            - name: QUARKUS_HTTP_PORT
+              value: "4566"
+            - name: FLOCI_PORT
+              value: "4566"
             - name: FLOCI_STORAGE_MODE
               value: "memory"
             - name: FLOCI_DEFAULT_REGION
